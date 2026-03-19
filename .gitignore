@@ -1,0 +1,22 @@
+# Android
+*.iml
+.gradle/
+local.properties
+.idea/
+*.apk
+*.aab
+*.ap_
+*.dex
+build/
+app/build/
+captures/
+.externalNativeBuild/
+.cxx/
+app/debug.keystore
+
+# React Native (legacy)
+node_modules/
+package-lock.json
+
+# macOS
+.DS_Store
