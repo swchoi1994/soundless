@@ -77,13 +77,13 @@ class AdbManager(private val context: Context) {
             if (!exited) {
                 process.destroyForcibly()
                 Log.e(TAG, "Pairing timed out")
-                return Result.failure(Exception("페어링 시간 초과"))
+                return Result.failure(Exception("PAIRING_TIMEOUT"))
             }
             Log.d(TAG, "Pair exit ${process.exitValue()}: $output")
             if (output.contains("Successfully paired", ignoreCase = true)) {
                 Result.success(output)
             } else {
-                Result.failure(Exception(output.ifEmpty { "페어링 실패 (exit ${process.exitValue()})" }))
+                Result.failure(Exception(output.ifEmpty { "Pairing failed (exit ${process.exitValue()})" }))
             }
         } catch (e: Exception) {
             Log.e(TAG, "Pair error: ${e.message}")
