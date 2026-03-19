@@ -1,97 +1,56 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Soundless
 
-# Getting Started
+Disable the camera shutter sound on Samsung Galaxy devices (Korea models) — no PC needed.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## What it does
 
-## Step 1: Start Metro
+Soundless toggles the system setting `csc_pref_camera_forced_shuttersound_key` using a local ADB server running directly on your phone. Once disabled, the shutter sound stays off even after closing the app. You only need to re-run after firmware updates or factory resets.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Features
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **One-tap shutter sound toggle** — turn the camera shutter sound on/off instantly
+- **No PC or USB cable required** — uses wireless ADB debugging locally on the device
+- **Auto port discovery** — detects wireless debugging and pairing ports automatically via mDNS
+- **6 languages** — English, 한국어, 日本語, العربية (RTL), 简体中文, 繁體中文
+- **5-page onboarding guide** — walks through setup step-by-step
+- **Dark theme** with clean, minimal UI
 
-```sh
-# Using npm
-npm start
+## Requirements
 
-# OR using Yarn
-yarn start
+- Android 11+ (API 30)
+- Samsung Galaxy device sold in Korea
+- Wi-Fi connection (for wireless debugging)
+
+## How it works
+
+1. The app bundles a real ADB binary (from [LADB](https://github.com/tytydraco/LADB))
+2. Uses Android's Wireless ADB Debugging to connect to the device locally
+3. Runs `adb shell settings put system csc_pref_camera_forced_shuttersound_key 0` to disable the shutter sound
+4. The setting persists at the system level — no background service needed
+
+## First-time setup
+
+1. Enable **Developer Options** (Settings > About Phone > tap Build Number 7 times)
+2. Turn on **USB Debugging** (if grayed out, disable Auto Blocker in Security settings)
+3. Turn on **Wireless Debugging** (requires Wi-Fi)
+4. Open Soundless and follow the onboarding guide
+5. Use split-screen to pair: open the pairing dialog in Settings, enter the code in Soundless
+6. Toggle the shutter sound!
+
+## Building
+
+```bash
+./gradlew :app:assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## Step 2: Build and run your app
+## Tech Stack
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+- Kotlin + Jetpack Compose (Material 3)
+- Local ADB via bundled `libadb.so` (from LADB, GPLv3)
+- mDNS/NSD for automatic port discovery
+- CompositionLocal-based localization (no XML string resources)
 
-### Android
+## License
 
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+ADB binaries are from [LADB](https://github.com/tytydraco/LADB) (GPLv3).
