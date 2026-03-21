@@ -58,16 +58,25 @@ data class UiState(
     val message: UiMessage = UiMessage.None,
     val isPairing: Boolean = false,
     val isConnecting: Boolean = false,
+    val adsRemoved: Boolean = false,
 )
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     val adb = AdbManager(application)
     val nsd = AdbServiceDiscovery(application)
+    val billing = BillingManager(application)
 
     private val _state = MutableStateFlow(UiState())
     val state: StateFlow<UiState> = _state.asStateFlow()
 
     init {
+        billing.startConnection()
+        // Sync ads removed state
+        viewModelScope.launch {
+            billing.adsRemoved.collect { removed ->
+                _state.value = _state.value.copy(adsRemoved = removed)
+            }
+        }
         tryConnect()
         // Auto-fill ports from NSD discovery
         viewModelScope.launch {
@@ -234,5 +243,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         super.onCleared()
         nsd.stopDiscovery()
         adb.cleanup()
+        billing.destroy()
     }
 }

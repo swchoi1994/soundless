@@ -76,6 +76,19 @@ data class Strings(
     val onboardingStep4Items: List<String>,
     val onboardingStep5Title: String,
     val onboardingStep5Items: List<String>,
+    // Menu
+    val menuInstructions: String,
+    val menuCheckUpdate: String,
+    val menuVersion: String,
+    val menuDeveloper: String,
+    val menuContact: String,
+    val updateAvailable: String,
+    val updateLatest: String,
+    val updateCheckFailed: String,
+    val updateDownload: String,
+    val close: String,
+    val removeAds: String,
+    val removeAdsDesc: String,
 )
 
 private fun koreanStrings() = Strings(
@@ -153,6 +166,18 @@ private fun koreanStrings() = Strings(
         "기본 카메라 앱에 바로 적용됩니다",
         "PC나 USB 케이블이 필요 없습니다!",
     ),
+    menuInstructions = "사용 방법",
+    menuCheckUpdate = "업데이트 확인",
+    menuVersion = "버전",
+    menuDeveloper = "개발자",
+    menuContact = "문의",
+    updateAvailable = "새 버전이 있습니다!",
+    updateLatest = "최신 버전을 사용 중입니다.",
+    updateCheckFailed = "업데이트 확인 실패",
+    updateDownload = "다운로드",
+    close = "닫기",
+    removeAds = "광고 제거 — $2.99",
+    removeAdsDesc = "일회성 결제로 광고를 영구 제거합니다",
 )
 
 private fun englishStrings() = Strings(
@@ -230,6 +255,18 @@ private fun englishStrings() = Strings(
         "Changes apply to the default camera app",
         "No PC or USB cable needed!",
     ),
+    menuInstructions = "Instructions",
+    menuCheckUpdate = "Check for Updates",
+    menuVersion = "Version",
+    menuDeveloper = "Developer",
+    menuContact = "Contact",
+    updateAvailable = "A new version is available!",
+    updateLatest = "You're on the latest version.",
+    updateCheckFailed = "Failed to check for updates",
+    updateDownload = "Download",
+    close = "Close",
+    removeAds = "Remove Ads — $2.99",
+    removeAdsDesc = "One-time payment to remove ads permanently",
 )
 
 private fun japaneseStrings() = Strings(
@@ -307,6 +344,18 @@ private fun japaneseStrings() = Strings(
         "デフォルトカメラアプリに即座に適用されます",
         "PCやUSBケーブルは不要です！",
     ),
+    menuInstructions = "使い方",
+    menuCheckUpdate = "アップデート確認",
+    menuVersion = "バージョン",
+    menuDeveloper = "開発者",
+    menuContact = "お問い合わせ",
+    updateAvailable = "新しいバージョンがあります！",
+    updateLatest = "最新バージョンを使用中です。",
+    updateCheckFailed = "アップデートの確認に失敗しました",
+    updateDownload = "ダウンロード",
+    close = "閉じる",
+    removeAds = "広告を削除 — $2.99",
+    removeAdsDesc = "一回の支払いで広告を永久に削除",
 )
 
 private fun arabicStrings() = Strings(
@@ -384,6 +433,18 @@ private fun arabicStrings() = Strings(
         "يُطبّق على تطبيق الكاميرا الافتراضي",
         "لا حاجة لحاسوب أو كابل USB!",
     ),
+    menuInstructions = "التعليمات",
+    menuCheckUpdate = "التحقق من التحديثات",
+    menuVersion = "الإصدار",
+    menuDeveloper = "المطور",
+    menuContact = "اتصل بنا",
+    updateAvailable = "يتوفر إصدار جديد!",
+    updateLatest = "أنت تستخدم أحدث إصدار.",
+    updateCheckFailed = "فشل التحقق من التحديثات",
+    updateDownload = "تحميل",
+    close = "إغلاق",
+    removeAds = "إزالة الإعلانات — $2.99",
+    removeAdsDesc = "دفعة واحدة لإزالة الإعلانات نهائيًا",
 )
 
 private fun simplifiedChineseStrings() = Strings(
@@ -461,6 +522,18 @@ private fun simplifiedChineseStrings() = Strings(
         "即时应用到默认相机应用",
         "无需电脑或USB线！",
     ),
+    menuInstructions = "使用说明",
+    menuCheckUpdate = "检查更新",
+    menuVersion = "版本",
+    menuDeveloper = "开发者",
+    menuContact = "联系",
+    updateAvailable = "有新版本可用！",
+    updateLatest = "已是最新版本。",
+    updateCheckFailed = "检查更新失败",
+    updateDownload = "下载",
+    close = "关闭",
+    removeAds = "移除广告 — $2.99",
+    removeAdsDesc = "一次性付款永久移除广告",
 )
 
 private fun traditionalChineseStrings() = Strings(
@@ -538,4 +611,16 @@ private fun traditionalChineseStrings() = Strings(
         "即時套用到預設相機應用程式",
         "無需電腦或USB線！",
     ),
+    menuInstructions = "使用說明",
+    menuCheckUpdate = "檢查更新",
+    menuVersion = "版本",
+    menuDeveloper = "開發者",
+    menuContact = "聯絡",
+    updateAvailable = "有新版本可用！",
+    updateLatest = "已是最新版本。",
+    updateCheckFailed = "檢查更新失敗",
+    updateDownload = "下載",
+    close = "關閉",
+    removeAds = "移除廣告 — $2.99",
+    removeAdsDesc = "一次性付款永久移除廣告",
 )

@@ -1,5 +1,6 @@
 package com.soundless
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -95,9 +97,17 @@ fun SoundlessApp(
     val strings = LocalStrings.current
     val language = LocalLanguage.current
 
+    val context = LocalContext.current
+    val showAd = !state.adsRemoved && state.screen == AppScreen.MAIN
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
+        bottomBar = {
+            if (showAd) {
+                BannerAd(modifier = Modifier.padding(bottom = 8.dp))
+            }
+        },
     ) { padding ->
         Column(
             modifier = Modifier
@@ -109,15 +119,17 @@ fun SoundlessApp(
         ) {
             Spacer(Modifier.height(48.dp))
 
-            // Header with help button (left) and language toggle (right)
+            // Header with menu (left) and language toggle (right)
             Box(modifier = Modifier.fillMaxWidth()) {
-                // Help button — top start
-                IconButton(
-                    onClick = onShowHelp,
-                    modifier = Modifier.align(Alignment.TopStart),
-                ) {
-                    Text("\uD83D\uDCD6", fontSize = 20.sp)
-                }
+                // Hamburger menu — top start
+                AppMenuButton(
+                    onShowInstructions = onShowHelp,
+                    onRemoveAds = {
+                        (context as? Activity)?.let { vm.billing.launchPurchaseFlow(it) }
+                    },
+                    adsRemoved = state.adsRemoved,
+                    modifier = Modifier.align(Alignment.TopStart).padding(top = 8.dp),
+                )
                 // Centered title
                 Column(
                     modifier = Modifier.fillMaxWidth(),
