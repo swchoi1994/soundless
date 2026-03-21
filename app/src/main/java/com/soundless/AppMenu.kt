@@ -2,6 +2,7 @@ package com.soundless
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -29,67 +29,76 @@ private const val GITHUB_API = "https://api.github.com/repos/swchoi1994/soundles
 private const val PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.soundless"
 
 @Composable
-fun AppMenuButton(
+fun DrawerContent(
     onShowInstructions: () -> Unit,
     onRemoveAds: () -> Unit,
     adsRemoved: Boolean,
-    modifier: Modifier = Modifier,
+    onClose: () -> Unit,
 ) {
     val strings = LocalStrings.current
     val context = LocalContext.current
-    var expanded by remember { mutableStateOf(false) }
     var showUpdate by remember { mutableStateOf(false) }
 
-    Box(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .clickable { expanded = true },
-            contentAlignment = Alignment.Center,
-        ) {
-            Text("\u2630", fontSize = 22.sp, color = Color(0xFF8E8E93))
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(280.dp)
+            .background(Color(0xFF1A1A1A))
+            .padding(top = 60.dp),
+    ) {
+        // App title in drawer
+        Text(
+            "Soundless",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            letterSpacing = 2.sp,
+            modifier = Modifier.padding(horizontal = 24.dp),
+        )
+        Text(
+            "v$APP_VERSION",
+            fontSize = 13.sp,
+            color = Color(0xFF636366),
+            modifier = Modifier.padding(start = 24.dp, top = 2.dp, bottom = 24.dp),
+        )
+
+        HorizontalDivider(color = Color(0xFF2A2A2A), thickness = 1.dp)
+        Spacer(Modifier.height(8.dp))
+
+        // Menu items
+        DrawerItem(emoji = "\uD83D\uDCD6", label = strings.menuInstructions) {
+            onClose(); onShowInstructions()
+        }
+        DrawerItem(emoji = "\uD83D\uDD04", label = strings.menuCheckUpdate) {
+            showUpdate = true
+        }
+        if (!adsRemoved) {
+            DrawerItem(
+                emoji = "\u2728",
+                label = strings.removeAds,
+                labelColor = Color(0xFF34C759),
+            ) {
+                onClose(); onRemoveAds()
+            }
         }
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            containerColor = Color(0xFF2A2A2A),
-            offset = DpOffset(0.dp, 4.dp),
-        ) {
-            DropdownMenuItem(
-                text = { Text(strings.menuInstructions, color = Color.White, fontSize = 15.sp) },
-                onClick = { expanded = false; onShowInstructions() },
-                leadingIcon = { Text("\uD83D\uDCD6", fontSize = 16.sp) },
-            )
-            DropdownMenuItem(
-                text = { Text(strings.menuCheckUpdate, color = Color.White, fontSize = 15.sp) },
-                onClick = { expanded = false; showUpdate = true },
-                leadingIcon = { Text("\uD83D\uDD04", fontSize = 16.sp) },
-            )
-            if (!adsRemoved) {
-                DropdownMenuItem(
-                    text = { Text(strings.removeAds, color = Color(0xFF34C759), fontSize = 15.sp) },
-                    onClick = { expanded = false; onRemoveAds() },
-                    leadingIcon = { Text("\u2728", fontSize = 16.sp) },
-                )
-            }
-            HorizontalDivider(color = Color(0xFF3A3A3C), thickness = 0.5.dp)
-            DropdownMenuItem(
-                text = {
-                    Column {
-                        Text("${strings.menuVersion}: $APP_VERSION", color = Color(0xFF8E8E93), fontSize = 13.sp)
-                        Text("${strings.menuDeveloper}: swc94", color = Color(0xFF8E8E93), fontSize = 13.sp)
-                        Text("${strings.menuContact}: swchoi94@seas.upenn.edu", color = Color(0xFF8E8E93), fontSize = 13.sp)
-                    }
-                },
-                onClick = {
+        Spacer(Modifier.weight(1f))
+
+        // Footer info
+        HorizontalDivider(color = Color(0xFF2A2A2A), thickness = 1.dp)
+        Column(modifier = Modifier.padding(24.dp)) {
+            Text("${strings.menuDeveloper}: swc94", color = Color(0xFF636366), fontSize = 13.sp)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "${strings.menuContact}: swchoi94@seas.upenn.edu",
+                color = Color(0xFF4A90D9),
+                fontSize = 13.sp,
+                modifier = Modifier.clickable {
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
                         data = Uri.parse("mailto:swchoi94@seas.upenn.edu")
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     }
                     try { context.startActivity(intent) } catch (_: Exception) {}
-                    expanded = false
                 },
             )
         }
@@ -97,6 +106,26 @@ fun AppMenuButton(
 
     if (showUpdate) {
         UpdateDialog(onDismiss = { showUpdate = false })
+    }
+}
+
+@Composable
+private fun DrawerItem(
+    emoji: String,
+    label: String,
+    labelColor: Color = Color.White,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 24.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(emoji, fontSize = 20.sp)
+        Spacer(Modifier.width(16.dp))
+        Text(label, color = labelColor, fontSize = 16.sp)
     }
 }
 
@@ -113,19 +142,16 @@ private fun UpdateDialog(onDismiss: () -> Unit) {
 
     LaunchedEffect(Unit) {
         scope.launch {
-            // Detect install source
             val installerName = try {
                 context.packageManager.getInstallSourceInfo(context.packageName).installingPackageName
             } catch (_: Exception) { null }
             isPlayStore = installerName == "com.android.vending"
 
             if (isPlayStore) {
-                // For Play Store installs, just link to Play Store
                 latestVersion = null
                 downloadUrl = PLAY_STORE_URL
                 checking = false
             } else {
-                // For sideloaded APKs, check GitHub releases
                 try {
                     val (version, url) = withContext(Dispatchers.IO) { fetchLatestRelease() }
                     latestVersion = version
@@ -140,29 +166,35 @@ private fun UpdateDialog(onDismiss: () -> Unit) {
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            modifier = Modifier.fillMaxWidth(0.9f),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
         ) {
             Column(
-                modifier = Modifier.padding(24.dp),
+                modifier = Modifier.fillMaxWidth().padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(strings.menuCheckUpdate, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
-                Spacer(Modifier.height(16.dp))
+                Text(
+                    strings.menuCheckUpdate,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(20.dp))
 
                 when {
                     checking -> {
                         CircularProgressIndicator(modifier = Modifier.size(32.dp), color = Color(0xFF4A90D9), strokeWidth = 2.dp)
-                        Spacer(Modifier.height(8.dp))
+                        Spacer(Modifier.height(12.dp))
                     }
                     isPlayStore -> {
-                        // Play Store: direct link to check
-                        Text("\uD83C\uDFEA", fontSize = 36.sp)
+                        Text("\uD83C\uDFEA", fontSize = 36.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                         Spacer(Modifier.height(8.dp))
-                        Text("Google Play", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                        Text("Google Play", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                         Spacer(Modifier.height(4.dp))
-                        Text("v$APP_VERSION", color = Color(0xFF8E8E93), fontSize = 14.sp)
+                        Text("v$APP_VERSION", color = Color(0xFF8E8E93), fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                         Spacer(Modifier.height(16.dp))
                         Button(
                             onClick = {
@@ -178,14 +210,14 @@ private fun UpdateDialog(onDismiss: () -> Unit) {
                         }
                     }
                     error -> {
-                        Text(strings.updateCheckFailed, color = Color(0xFFE54D42), fontSize = 14.sp, textAlign = TextAlign.Center)
+                        Text(strings.updateCheckFailed, color = Color(0xFFE54D42), fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                     }
                     latestVersion != null && isNewerVersion(latestVersion!!, APP_VERSION) -> {
-                        Text("\uD83C\uDD95", fontSize = 36.sp)
+                        Text("\uD83C\uDD95", fontSize = 36.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                         Spacer(Modifier.height(8.dp))
-                        Text(strings.updateAvailable, color = Color(0xFF34C759), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                        Text(strings.updateAvailable, color = Color(0xFF34C759), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                         Spacer(Modifier.height(4.dp))
-                        Text("$APP_VERSION \u2192 ${latestVersion?.removePrefix("v")}", color = Color(0xFF8E8E93), fontSize = 14.sp)
+                        Text("$APP_VERSION \u2192 ${latestVersion?.removePrefix("v")}", color = Color(0xFF8E8E93), fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                         Spacer(Modifier.height(16.dp))
                         if (downloadUrl != null) {
                             Button(
@@ -203,16 +235,16 @@ private fun UpdateDialog(onDismiss: () -> Unit) {
                         }
                     }
                     else -> {
-                        Text("\u2705", fontSize = 36.sp)
+                        Text("\u2705", fontSize = 36.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                         Spacer(Modifier.height(8.dp))
-                        Text(strings.updateLatest, color = Color(0xFF8E8E93), fontSize = 14.sp, textAlign = TextAlign.Center)
+                        Text(strings.updateLatest, color = Color(0xFF8E8E93), fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                         Spacer(Modifier.height(4.dp))
-                        Text("v$APP_VERSION", color = Color(0xFF4A90D9), fontSize = 14.sp)
+                        Text("v$APP_VERSION", color = Color(0xFF4A90D9), fontSize = 14.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                     }
                 }
 
                 Spacer(Modifier.height(16.dp))
-                TextButton(onClick = onDismiss) {
+                TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
                     Text(strings.close, color = Color(0xFF8E8E93))
                 }
             }
@@ -227,13 +259,10 @@ private fun fetchLatestRelease(): Pair<String?, String?> {
     conn.setRequestProperty("Accept", "application/vnd.github.v3+json")
     conn.connectTimeout = 10_000
     conn.readTimeout = 10_000
-
     val response = conn.inputStream.bufferedReader().readText()
     conn.disconnect()
-
     val tagName = Regex(""""tag_name"\s*:\s*"([^"]+)"""").find(response)?.groupValues?.get(1)
     val browserUrl = Regex(""""html_url"\s*:\s*"([^"]+)"""").find(response)?.groupValues?.get(1)
-
     return Pair(tagName, browserUrl)
 }
 

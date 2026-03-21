@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,7 +15,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -96,10 +99,29 @@ fun SoundlessApp(
 ) {
     val strings = LocalStrings.current
     val language = LocalLanguage.current
-
     val context = LocalContext.current
     val showAd = !state.adsRemoved && state.screen == AppScreen.MAIN
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            DrawerContent(
+                onShowInstructions = {
+                    scope.launch { drawerState.close() }
+                    onShowHelp()
+                },
+                onRemoveAds = {
+                    scope.launch { drawerState.close() }
+                    (context as? Activity)?.let { vm.billing.launchPurchaseFlow(it) }
+                },
+                adsRemoved = state.adsRemoved,
+                onClose = { scope.launch { drawerState.close() } },
+            )
+        },
+        gesturesEnabled = true,
+    ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -119,17 +141,20 @@ fun SoundlessApp(
         ) {
             Spacer(Modifier.height(48.dp))
 
-            // Header with menu (left) and language toggle (right)
+            // Header with hamburger (left) and language toggle (right)
             Box(modifier = Modifier.fillMaxWidth()) {
-                // Hamburger menu — top start
-                AppMenuButton(
-                    onShowInstructions = onShowHelp,
-                    onRemoveAds = {
-                        (context as? Activity)?.let { vm.billing.launchPurchaseFlow(it) }
-                    },
-                    adsRemoved = state.adsRemoved,
-                    modifier = Modifier.align(Alignment.TopStart).padding(top = 8.dp),
-                )
+                // Hamburger icon — opens sidebar drawer
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(top = 8.dp)
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { scope.launch { drawerState.open() } },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text("\u2630", fontSize = 22.sp, color = Color(0xFF8E8E93))
+                }
                 // Centered title
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -167,6 +192,7 @@ fun SoundlessApp(
             }
         }
     }
+    } // ModalNavigationDrawer
 }
 
 @Composable
