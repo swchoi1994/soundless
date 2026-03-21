@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
 
-const val APP_VERSION = "1.1.0"
+const val APP_VERSION = "1.0.0"
 private const val GITHUB_API = "https://api.github.com/repos/swchoi1994/soundless/releases/latest"
 private const val PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.soundless"
 
@@ -140,6 +140,7 @@ private fun UpdateDialog(onDismiss: () -> Unit) {
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
+            modifier = Modifier.fillMaxWidth(0.9f),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
         ) {
@@ -179,7 +180,7 @@ private fun UpdateDialog(onDismiss: () -> Unit) {
                     error -> {
                         Text(strings.updateCheckFailed, color = Color(0xFFE54D42), fontSize = 14.sp, textAlign = TextAlign.Center)
                     }
-                    latestVersion != null && latestVersion != APP_VERSION && latestVersion != "v$APP_VERSION" -> {
+                    latestVersion != null && isNewerVersion(latestVersion!!, APP_VERSION) -> {
                         Text("\uD83C\uDD95", fontSize = 36.sp)
                         Spacer(Modifier.height(8.dp))
                         Text(strings.updateAvailable, color = Color(0xFF34C759), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
@@ -234,4 +235,16 @@ private fun fetchLatestRelease(): Pair<String?, String?> {
     val browserUrl = Regex(""""html_url"\s*:\s*"([^"]+)"""").find(response)?.groupValues?.get(1)
 
     return Pair(tagName, browserUrl)
+}
+
+private fun isNewerVersion(remote: String, current: String): Boolean {
+    val r = remote.removePrefix("v").split(".").mapNotNull { it.toIntOrNull() }
+    val c = current.removePrefix("v").split(".").mapNotNull { it.toIntOrNull() }
+    for (i in 0 until maxOf(r.size, c.size)) {
+        val rv = r.getOrElse(i) { 0 }
+        val cv = c.getOrElse(i) { 0 }
+        if (rv > cv) return true
+        if (rv < cv) return false
+    }
+    return false
 }
