@@ -6,6 +6,8 @@ import com.google.android.gms.ads.MobileAds
 class SoundlessApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        MobileAds.initialize(this) {}
+        MobileAds.initialize(this) {
+            AppOpenAdManager(this).init()
+        }
     }
 }
