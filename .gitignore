@@ -21,3 +21,4 @@ package-lock.json
 # macOS
 .DS_Store
 soundless-release.keystore
+keystore.properties

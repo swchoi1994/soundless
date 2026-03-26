@@ -1,5 +1,6 @@
 package com.soundless
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -15,8 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -28,6 +31,7 @@ data class OnboardingStep(
     val emoji: String,
     val title: String,
     val items: List<String>,
+    val imageRes: Int? = null,
 )
 
 private val emojis = listOf("\u2699\uFE0F", "\uD83D\uDD13", "\uD83D\uDCF6", "\uD83D\uDD17", "\uD83D\uDD07")
@@ -36,10 +40,10 @@ private val emojis = listOf("\u2699\uFE0F", "\uD83D\uDD13", "\uD83D\uDCF6", "\uD
 private fun onboardingSteps(): List<OnboardingStep> {
     val s = LocalStrings.current
     return listOf(
-        OnboardingStep(emojis[0], s.onboardingStep1Title, s.onboardingStep1Items),
-        OnboardingStep(emojis[1], s.onboardingStep2Title, s.onboardingStep2Items),
-        OnboardingStep(emojis[2], s.onboardingStep3Title, s.onboardingStep3Items),
-        OnboardingStep(emojis[3], s.onboardingStep4Title, s.onboardingStep4Items),
+        OnboardingStep(emojis[0], s.onboardingStep1Title, s.onboardingStep1Items, R.drawable.onboarding_settings_page),
+        OnboardingStep(emojis[1], s.onboardingStep2Title, s.onboardingStep2Items, R.drawable.onboarding_usb_debugging),
+        OnboardingStep(emojis[2], s.onboardingStep3Title, s.onboardingStep3Items, R.drawable.onboarding_developer_options),
+        OnboardingStep(emojis[3], s.onboardingStep4Title, s.onboardingStep4Items, R.drawable.onboarding_split_screen),
         OnboardingStep(emojis[4], s.onboardingStep5Title, s.onboardingStep5Items),
     )
 }
@@ -167,6 +171,24 @@ fun OnboardingScreen(onFinish: () -> Unit, langManager: LanguageManager) {
                                 )
                             }
                         }
+                    }
+                }
+
+                step.imageRes?.let { res ->
+                    Spacer(Modifier.height(16.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
+                    ) {
+                        Image(
+                            painter = painterResource(res),
+                            contentDescription = step.title,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp)),
+                            contentScale = ContentScale.FillWidth,
+                        )
                     }
                 }
             }
